@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="TaskManager.ProcessListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TaskManager"
+             xmlns:viewModels="clr-namespace:TaskManager.ViewModels"
+             xmlns:models="clr-namespace:TaskManager.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=False}">
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+            <TextBox Width="200" Margin="0,0,10,0"
+                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Odśwież" Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding Processes}" SelectedItem="{Binding SelectedProcess}"
+                  AutoGenerateColumns="False" CanUserSortColumns="True"
+                  d:DataContext="{d:DesignInstance Type=models:ProcessModel, IsDesignTimeCreatable=False}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" />
+                <DataGridTextColumn Header="Priorytet" Binding="{Binding Priority}" Width="Auto" />
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Procesor" Binding="{Binding CpuUsage}" Width="*" />
+                <DataGridTextColumn Header="Pamięć" Binding="{Binding MemoryUsage}" Width="*" />
+                <DataGridTextColumn Header="Dysk" Binding="{Binding DiskUsage}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>
