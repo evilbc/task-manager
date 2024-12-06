@@ -11,8 +11,9 @@ public class MainViewModel
 
 	public MainViewModel()
 	{
-		var processesViewModel = new ProcessViewModel(new MessageBoxErrorService());
-		var tasksViewModel = new TaskViewModel();
+		var errorMessageService = new MessageBoxErrorService();
+		var processesViewModel = new ProcessViewModel(errorMessageService);
+		var tasksViewModel = new TaskViewModel(errorMessageService);
 
 		Tabs = [processesViewModel, tasksViewModel];
 	}

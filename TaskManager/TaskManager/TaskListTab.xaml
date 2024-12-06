@@ -21,14 +21,23 @@
         </StackPanel>
 
         <DataGrid ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" Grid.Row="1" AutoGenerateColumns="False"
-                  CanUserSortColumns="True">
+                  CanUserSortColumns="True" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Czas" Binding="{Binding ScheduledTime}" Width="Auto" />
-                <DataGridTextColumn Header="Komenda" Binding="{Binding Command}" Width="Auto" />
-                <DataGridTextColumn Header="Cykliczne" Binding="{Binding IsCyclic}" Width="Auto" />
-                <DataGridTextColumn Header="Wykonania" Binding="{Binding ExecutionCount}" Width="Auto" />
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="300" />
+                <DataGridTextColumn Header="Czas" Binding="{Binding ScheduledTime}" Width="100" />
+                <DataGridTextColumn Header="Komenda" Binding="{Binding Command}" Width="200" />
+                <DataGridTextColumn Header="Cykliczne" Binding="{Binding IsCyclic}" Width="70" />
+                <DataGridTextColumn Header="Wykonania" Binding="{Binding ExecutionCount}" Width="70" />
             </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ToolTip">
+                        <Setter.Value>
+                            <TextBlock Text="{Binding Tooltip}" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.RowStyle>
         </DataGrid>
     </Grid>
 </UserControl>

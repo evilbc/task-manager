@@ -11,5 +11,6 @@
         <DataTemplate DataType="{x:Type viewModels:TaskViewModel}">
             <local:TaskListTab />
         </DataTemplate>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Application.Resources>
 </Application>

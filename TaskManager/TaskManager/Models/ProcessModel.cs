@@ -1,22 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TaskManager.Models
 {
-	public class ProcessModel
+	public class ProcessModel : INotifyPropertyChanged
 	{
+		private string _memoryUsage;
 		private Process Process { get; }
 		public int Id => Process.Id;
 		public string Name => Process.ProcessName;
 		public List<string> ThreadInfo { get; private set; }
 		public List<string> ModuleInfo { get; private set; }
-		public string MemoryUsage { get; private set; }
+
+		public string MemoryUsage
+		{
+			get => _memoryUsage;
+			private set
+			{
+				_memoryUsage = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public string StartTime { get; private set; }
 
 		public ProcessPriorityClass? Priority
@@ -32,7 +45,10 @@ namespace TaskManager.Models
 					return null;
 				}
 			}
-			set => Process.PriorityClass = value!.Value;
+			set {
+				Process.PriorityClass = value!.Value;
+				OnPropertyChanged();
+			}
 		}
 
 		public ProcessModel(Process process)
@@ -68,6 +84,7 @@ namespace TaskManager.Models
 			{
 				ThreadInfo.Add($"Brak dostępu do wątków: {e.Message}");
 			}
+			OnPropertyChanged(nameof(ThreadInfo));
 		}
 
 		private void UpdateModuleInfo()
@@ -84,8 +101,15 @@ namespace TaskManager.Models
 			{
 				ModuleInfo.Add($"Brak dostępu do modułów: {e.Message}");
 			}
+			OnPropertyChanged(nameof(ModuleInfo));
 		}
 
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 }
 

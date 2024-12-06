@@ -44,14 +44,19 @@ namespace TaskManager.ViewModels
 
 		private void AddTask()
 		{
-			Tasks.Add(new TaskModel
+			var newTask = new TaskModel
 			{
 				Name = "Nowe zadanie",
 				ScheduledTime = DateTime.Now.AddMinutes(1),
 				Command = "Notepad.exe",
 				IsCyclic = false,
 				ExecutionCount = 0
-			});
+			};
+			var addTaskWindow = new AddTaskWindow(newTask);
+			if (addTaskWindow.ShowDialog() == true)
+			{
+				Tasks.Add(newTask);
+			}
 		}
 
 		private void RemoveTask()
@@ -67,12 +72,16 @@ namespace TaskManager.ViewModels
 
 				foreach (var task in Tasks.ToList())
 				{
-					if (task.ScheduledTime > now) continue;
+					if (task.ScheduledTime > now || task.IsDone) continue;
 					ExecuteTask(task);
 
 					if (task.IsCyclic && task.Interval.HasValue)
 					{
 						task.ScheduledTime = now.Add(task.Interval.Value);
+					}
+					else
+					{
+						task.IsDone = true;
 					}
 				}
 
