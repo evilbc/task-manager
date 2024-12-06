@@ -6,40 +6,24 @@
         xmlns:local="clr-namespace:TaskManager"
         xmlns:viewModels="clr-namespace:TaskManager.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel, IsDesignTimeCreatable=False}">
+        Title="MainWindow" Height="650" Width="800">
+
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <ContentControl Grid.Column="0">
-            <local:ProcessListControl />
-        </ContentControl>
-
-        <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock Text="Szczegóły procesu" FontWeight="Bold" Margin="0,0,0,10" />
-            <TextBlock Text="ID:" FontWeight="Bold" />
-            <TextBlock Text="{Binding SelectedProcess.Id}" />
-            <TextBlock Text="Nazwa:" FontWeight="Bold" />
-            <TextBlock Text="{Binding SelectedProcess.Name}" />
-            <TextBlock Text="Używana pamięć:" FontWeight="Bold" />
-            <TextBlock Text="{Binding SelectedProcess.MemoryUsage, StringFormat={}{0:N0} B}" />
-            <TextBlock Text="Czas uruchomienia:" FontWeight="Bold" />
-            <TextBlock Text="{Binding SelectedProcess.StartTime}" />
-            <TextBlock Text="Priorytet:" FontWeight="Bold" />
-            <TextBlock Text="{Binding SelectedProcess.Priority}" />
-
-            <TextBlock Text="Wątki:" FontWeight="Bold" Margin="0,10,0,0" />
-            <ListBox ItemsSource="{Binding SelectedProcess.ThreadInfo}" Height="50" />
-
-            <TextBlock Text="Moduły:" FontWeight="Bold" Margin="0,10,0,0" />
-            <ListBox ItemsSource="{Binding SelectedProcess.ModuleInfo}" Height="50" />
-            <Button Content="Zabij proces" Command="{Binding KillProcessCommand}" />
-            <ComboBox ItemsSource="{Binding Priorities}" SelectedItem="{Binding SelectedPriority}" 
-                      Margin="0,10,0,5" />
-            <Button Content="Zmień priorytet" Command="{Binding ChangePriorityCommand}" />
-        </StackPanel>
+        <TabControl ItemsSource="{Binding Tabs}" >
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Header}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentPresenter Content="{Binding}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </Grid>
 </Window>

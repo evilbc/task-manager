@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="TaskManager.TaskListTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TaskManager"
+             xmlns:viewModels="clr-namespace:TaskManager.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewModels:TaskViewModel, IsDesignTimeCreatable=False}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10">
+            <Button Content="Dodaj zadanie" Command="{Binding AddTaskCommand}" Margin="0,0,10,0" />
+            <Button Content="Usuń zadanie" Command="{Binding RemoveTaskCommand}" 
+                    IsEnabled="{Binding SelectedTask}" />
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" Grid.Row="1" AutoGenerateColumns="False"
+                  CanUserSortColumns="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Czas" Binding="{Binding ScheduledTime}" Width="Auto" />
+                <DataGridTextColumn Header="Komenda" Binding="{Binding Command}" Width="Auto" />
+                <DataGridTextColumn Header="Cykliczne" Binding="{Binding IsCyclic}" Width="Auto" />
+                <DataGridTextColumn Header="Wykonania" Binding="{Binding ExecutionCount}" Width="Auto" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

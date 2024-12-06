@@ -42,7 +42,7 @@ namespace TaskManager.Models
 
 		public void UpdateDetails()
 		{
-			UpateThreadInfo();
+			UpdateThreadInfo();
 			UpdateModuleInfo();
 			MemoryUsage = Process.WorkingSet64.ToStringAsMemory();
 			StartTime = Process.StartTime.ToString(CultureInfo.InvariantCulture);
@@ -54,7 +54,7 @@ namespace TaskManager.Models
 			Process.Kill();
 		}
 
-		private void UpateThreadInfo()
+		private void UpdateThreadInfo()
 		{
 			ThreadInfo = new List<string>();
 			try
