@@ -23,9 +23,6 @@
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" />
                 <DataGridTextColumn Header="Priorytet" Binding="{Binding Priority}" Width="Auto" />
                 <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Procesor" Binding="{Binding CpuUsage}" Width="*" />
-                <DataGridTextColumn Header="Pamięć" Binding="{Binding MemoryUsage}" Width="*" />
-                <DataGridTextColumn Header="Dysk" Binding="{Binding DiskUsage}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>

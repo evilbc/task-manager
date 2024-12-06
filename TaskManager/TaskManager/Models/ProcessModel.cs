@@ -2,26 +2,22 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TaskManager.Models
 {
-	public class ProcessModel : IDisposable
+	public class ProcessModel
 	{
 		private Process Process { get; }
-		private PerformanceCounter CpuCounter { get; }
-		private PerformanceCounter DiskCounter { get; }
-		private PerformanceCounter MemoryCounter { get; }
-		private float _cpuUsage { get; set; }
-		private float _diskUsage { get; set; }
-		private float _memoryUsage { get; set; }
 		public int Id => Process.Id;
 		public string Name => Process.ProcessName;
-		public string MemoryUsage => $"{_memoryUsage} MB";
-		public string CpuUsage => $"{_cpuUsage} %";
-		public string DiskUsage => $"{_diskUsage} MB/s";
+		public List<string> ThreadInfo { get; private set; }
+		public List<string> ModuleInfo { get; private set; }
+		public string MemoryUsage { get; private set; }
+		public string StartTime { get; private set; }
 
 		public ProcessPriorityClass? Priority
 		{
@@ -39,21 +35,18 @@ namespace TaskManager.Models
 			set => Process.PriorityClass = value!.Value;
 		}
 
-
 		public ProcessModel(Process process)
 		{
 			Process = process;
-			CpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
-			DiskCounter = new PerformanceCounter("Process", "IO Data Bytes/sec", process.ProcessName, true);
-			MemoryCounter = new PerformanceCounter("Process", "Working Set", process.ProcessName, true);
-			NextTick();
 		}
 
-		public void NextTick()
+		public void UpdateDetails()
 		{
-			_cpuUsage = CpuCounter.NextValue() / Environment.ProcessorCount;
-			_diskUsage = DiskCounter.NextValue() / 1024 / 1024;
-			_memoryUsage = MemoryCounter.NextValue();
+			UpateThreadInfo();
+			UpdateModuleInfo();
+			MemoryUsage = Process.WorkingSet64.ToStringAsMemory();
+			StartTime = Process.StartTime.ToString(CultureInfo.InvariantCulture);
+
 		}
 
 		public void Kill()
@@ -61,12 +54,38 @@ namespace TaskManager.Models
 			Process.Kill();
 		}
 
-		public void Dispose()
+		private void UpateThreadInfo()
 		{
-			DiskCounter.Dispose();
-			CpuCounter.Dispose();
-			MemoryCounter.Dispose();
+			ThreadInfo = new List<string>();
+			try
+			{
+				foreach (ProcessThread thread in Process.Threads)
+				{
+					ThreadInfo.Add($"Wątek ID: {thread.Id}, stan: {thread.ThreadState}");
+				}
+			}
+			catch (Exception e)
+			{
+				ThreadInfo.Add($"Brak dostępu do wątków: {e.Message}");
+			}
 		}
+
+		private void UpdateModuleInfo()
+		{
+			ModuleInfo = new List<string>();
+			try
+			{
+				foreach (ProcessModule module in Process.Modules)
+				{
+					ModuleInfo.Add($"{module.ModuleName} ({module.FileName})");
+				}
+			}
+			catch (Exception e)
+			{
+				ModuleInfo.Add($"Brak dostępu do modułów: {e.Message}");
+			}
+		}
+
 	}
 }
 

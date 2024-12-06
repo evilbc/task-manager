@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 using TaskManager.Models;
 using TaskManager.Services;
 
@@ -34,6 +35,7 @@ namespace TaskManager.ViewModels
 			set
 			{
 				_selectedProcess = value;
+				_selectedProcess?.UpdateDetails();
 				OnPropertyChanged(nameof(SelectedProcess));
 				_changePriorityCommand.NotifyCanExecuteChanged();
 				_killProcessCommand.NotifyCanExecuteChanged();
@@ -100,6 +102,10 @@ namespace TaskManager.ViewModels
 			};
 			SelectedPriority = ProcessPriorityClass.Normal;
 
+			var timer = new DispatcherTimer();
+			timer.Interval = TimeSpan.FromSeconds(1);
+			timer.Tick += (sender, args) => LoadProcesses();
+			timer.Start();
 		}
 
 		private bool FilterProcesses(object item)
@@ -111,40 +117,27 @@ namespace TaskManager.ViewModels
 			return false;
 		}
 
-		private async void LoadProcesses()
+		private void LoadProcesses()
 		{
-			// List<ProcessModel> 
-			// _processes.Clear();
-			// foreach (var process in Process.GetProcesses())
-			// {
-			// 	_processes.Add(new ProcessModel(process));
-			// }
-			List<ProcessModel> currentList = new List<ProcessModel>(_processes);
-			List<ProcessModel> found = new List<ProcessModel>();
-			List<ProcessModel> newList = new List<ProcessModel>();
-			_processes.Clear();
-			await Task.Run(() =>
+			var current = Process.GetProcesses().ToList();
+			var toRemove = new List<ProcessModel>();
+			foreach (var process in _processes)
 			{
-				Process.GetProcesses().AsParallel().ForAll(process =>
+				var idx = current.FindIndex(p => p.Id == process.Id);
+				if (idx >= 0)
 				{
-					var idx = currentList.FindIndex(p => p.Id == process.Id);
-					if (idx >= 0)
-					{
-						var p = currentList[idx];
-						found.Add(p);
-						p.NextTick();
-					}
-					else
-					{
-						var p = new ProcessModel(process);
-						newList.Add(p);
-					}
-				});
-			});
-			found.ForEach(_processes.Add);
-			newList.ForEach(_processes.Add);
-			found.ForEach(f => currentList.Remove(f));
-			currentList.ForEach(p => p.Dispose());
+					current.RemoveAt(idx);
+				}
+				else
+				{
+					toRemove.Add(process);
+				}
+			}
+			toRemove.ForEach(p => _processes.Remove(p));
+			foreach (var process in current)
+			{
+				_processes.Add(new ProcessModel(process));
+			}
 		}
 
 		private void KillProcess()
